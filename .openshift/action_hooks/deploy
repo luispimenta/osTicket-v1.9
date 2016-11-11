@@ -1,0 +1,33 @@
+#!/bin/bash
+# Confirm database exists, if not create it
+
+if ! /usr/bin/mysql -u "$OPENSHIFT_MYSQL_DB_USERNAME" --password="$OPENSHIFT_MYSQL_DB_PASSWORD" -h "$OPENSHIFT_MYSQL_DB_HOST" -e "show tables;" osTicket > /dev/null 2>&1
+then
+echo
+echo "Database not found! Creating and importing"
+    echo
+    echo 'creating db'
+	  /usr/bin/mysqladmin -u "$OPENSHIFT_MYSQL_DB_USERNAME" --password="$OPENSHIFT_MYSQL_DB_PASSWORD" -h "$OPENSHIFT_MYSQL_DB_HOST" create osTicket
+    echo 'importing db'
+    /usr/bin/mysql -u "$OPENSHIFT_MYSQL_DB_USERNAME" --password="$OPENSHIFT_MYSQL_DB_PASSWORD" -h "$OPENSHIFT_MYSQL_DB_HOST" osTicket < "$OPENSHIFT_REPO_DIR/db/database.sql"
+    echo 'setting email'
+    /usr/bin/mysql -u "$OPENSHIFT_MYSQL_DB_USERNAME" --password="$OPENSHIFT_MYSQL_DB_PASSWORD" -h "$OPENSHIFT_MYSQL_DB_HOST" -e "USE osTicket; UPDATE ost_config SET value = 'admin@admin.com' WHERE id = 1"
+    echo 'setting url'
+    /usr/bin/mysql -u "$OPENSHIFT_MYSQL_DB_USERNAME" --password="$OPENSHIFT_MYSQL_DB_PASSWORD" -h "$OPENSHIFT_MYSQL_DB_HOST" -e "USE osTicket; UPDATE ost_config SET value = 'http://$OPENSHIFT_APP_DNS/' WHERE id = 2"
+    echo 'setting name system'
+    /usr/bin/mysql -u "$OPENSHIFT_MYSQL_DB_USERNAME" --password="$OPENSHIFT_MYSQL_DB_PASSWORD" -h "$OPENSHIFT_MYSQL_DB_HOST" -e "USE osTicket; UPDATE ost_config SET value = 'osTicket' WHERE id = 3"
+    echo 'setting username'
+    /usr/bin/mysql -u "$OPENSHIFT_MYSQL_DB_USERNAME" --password="$OPENSHIFT_MYSQL_DB_PASSWORD" -h "$OPENSHIFT_MYSQL_DB_HOST" -e "USE osTicket; UPDATE ost_staff SET username = 'admin' WHERE staff_id = 1"
+    echo 'setting first name'
+    /usr/bin/mysql -u "$OPENSHIFT_MYSQL_DB_USERNAME" --password="$OPENSHIFT_MYSQL_DB_PASSWORD" -h "$OPENSHIFT_MYSQL_DB_HOST" -e "USE osTicket; UPDATE ost_staff SET firstname = 'admin' WHERE staff_id = 1"
+    echo 'setting last name'
+    /usr/bin/mysql -u "$OPENSHIFT_MYSQL_DB_USERNAME" --password="$OPENSHIFT_MYSQL_DB_PASSWORD" -h "$OPENSHIFT_MYSQL_DB_HOST" -e "USE osTicket; UPDATE ost_staff SET lastname = 'admin' WHERE staff_id = 1"
+    echo 'setting email'
+    /usr/bin/mysql -u "$OPENSHIFT_MYSQL_DB_USERNAME" --password="$OPENSHIFT_MYSQL_DB_PASSWORD" -h "$OPENSHIFT_MYSQL_DB_HOST" -e "USE osTicket; UPDATE ost_staff SET email = 'admin@admin.com' WHERE staff_id = 1"
+    echo 'setting passwd'
+    /usr/bin/mysql -u "$OPENSHIFT_MYSQL_DB_USERNAME" --password="$OPENSHIFT_MYSQL_DB_PASSWORD" -h "$OPENSHIFT_MYSQL_DB_HOST" -e "USE osTicket; UPDATE ost_staff SET passwd = md5('changeme') WHERE staff_id = 1"
+    echo
+echo "done."
+else
+echo "Database found, skipping build"
+fi
