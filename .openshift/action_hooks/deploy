@@ -26,6 +26,8 @@ echo "Database not found! Creating and importing"
     /usr/bin/mysql -u "$OPENSHIFT_MYSQL_DB_USERNAME" --password="$OPENSHIFT_MYSQL_DB_PASSWORD" -h "$OPENSHIFT_MYSQL_DB_HOST" -e "USE osTicket; UPDATE ost_staff SET email = 'admin@admin.com' WHERE staff_id = 1"
     echo 'setting passwd'
     /usr/bin/mysql -u "$OPENSHIFT_MYSQL_DB_USERNAME" --password="$OPENSHIFT_MYSQL_DB_PASSWORD" -h "$OPENSHIFT_MYSQL_DB_HOST" -e "USE osTicket; UPDATE ost_staff SET passwd = md5('changeme') WHERE staff_id = 1"
+    echo 'setting email '
+    /usr/bin/mysql -u "$OPENSHIFT_MYSQL_DB_USERNAME" --password="$OPENSHIFT_MYSQL_DB_PASSWORD" -h "$OPENSHIFT_MYSQL_DB_HOST" -e "USE osTicket; UPDATE ost_email SET email = 'support@gmail.com' WHERE email_id = 1"
     echo
 echo "done."
 else
