@@ -28,8 +28,10 @@ class UsersAjaxAPI extends AjaxController {
         if(!isset($_REQUEST['q'])) {
             Http::response(400, __('Query argument is required'));
         }
-
-        $limit = isset($_REQUEST['limit']) ? (int) $_REQUEST['limit']:25;
+        
+        /* Set the limit to list all users on mobile */
+        //$limit = isset($_REQUEST['limit']) ? (int) $_REQUEST['limit']:25;
+        $limit = 1000;        
         $users=array();
         $emails=array();
 
